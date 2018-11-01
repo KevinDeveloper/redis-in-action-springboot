@@ -1,0 +1,12 @@
+spring:
+  redis:
+    host: 172.16.20.38
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-idle: 20
+        min-idle: 1
+        max-active: 20
+        max-wait: 60000
+    database: 0 #默认是索引为的0的数据库
