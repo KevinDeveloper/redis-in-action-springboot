@@ -1,0 +1,46 @@
+//=====================================================
+名称：发布的文章
+存储类型：hash
+Key: article:${articleId}
+Value: map<key, value>
+    key:title, value:**** , 说明：标题
+    key:link, value:****， 说明：连接
+    key:poster, value: user:${userId} ， 说明： 作者id
+    key:time, value: **** , 说明： 创建时间
+    key: votes, value:*** , 说明： 投票数量
+说明：每篇文章的详情
+
+//=====================================================
+名称：文章发布时间排序集合
+存储类型：zset
+Key: time
+Value:  [(member, score), (member, score),...]
+    member: article:${articleId} , score: 时间值, 说明：每篇文章的发布时间值
+说明：说明：每篇文章的发布排序集合
+
+//=====================================================
+名称：文章评分排序集合
+存储类型：zset
+Key: score
+Value: [(member, score), (member, score),...]
+    member: article:${articleId} , score: 评分值, 说明：每篇文章的评分值
+说明：每篇文章的评分排序集合
+
+//=====================================================
+名称：每篇文章的投票用户
+存储类型：set
+Key: voted:${articleId}
+Value: [user:${userId},user:${userId}]
+说明：存储每篇文章的投票用户
+
+//=====================================================
+名称：每个群组下的文章
+存储类型：set
+Key: group:${groupId}
+Value: [article:${articleId},article:${articleId}]
+说明：存储每个群组下的文章id
+
+//=====================================================
+
+
+
