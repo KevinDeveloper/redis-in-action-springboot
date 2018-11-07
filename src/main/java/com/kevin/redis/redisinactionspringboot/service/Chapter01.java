@@ -4,10 +4,8 @@ import com.kevin.redis.redisinactionspringboot.redis.RedisUtil;
 import com.kevin.redis.redisinactionspringboot.util.UUIDUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.ZParams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,18 +125,19 @@ public class Chapter01 {
 
     /**
      * 按群组获取文章
+     *
      * @param groupId
      * @param page
      * @param order
      * @return
      */
-    public List<Map<String, Object>> getGroupArticles(String groupId, int page, String order){
+    public List<Map<String, Object>> getGroupArticles(String groupId, int page, String order) {
         List<Map<String, Object>> articles = new ArrayList<>();
         order = "score";
-        String groupOrderKey = order+groupId;
-        if(!redisTemplate.hasKey(groupOrderKey)){
+        String groupOrderKey = order + groupId;
+        if (!redisTemplate.hasKey(groupOrderKey)) {
             redisTemplate.opsForZSet().intersectAndStore(groupOrderKey, "group:" + groupId, order);
-            redisTemplate.expire(groupOrderKey,60, TimeUnit.SECONDS);
+            redisTemplate.expire(groupOrderKey, 60, TimeUnit.SECONDS);
         }
         int startIndex = (page > 1 ? page - 1 : 0) * ARTICLES_PER_PAGE;
         int endIndex = startIndex + ARTICLES_PER_PAGE - 1;
