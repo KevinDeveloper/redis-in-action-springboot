@@ -42,5 +42,47 @@ Value: [article:${articleId},article:${articleId}]
 
 //=====================================================
 
+//=====================================================
+名称：token 与 userId 之间的关系映射
+存储类型：hash
+Key: login:
+Value: map<key, value>
+    key:token1, value:userId1 , 说明：用户1
+    key:token2, value:userId2， 说明：用户2
 
+说明：每个token对应的用户id
 
+//=====================================================
+名称：每个token的时间
+存储类型：zset
+Key: recent
+Value: [(member, score), (member, score),...]
+    member: ${token} , score: timestamp, 说明: 每个token登陆时间
+说明：每个token登陆时间
+
+//=====================================================
+名称：每个用户最近的浏览数
+存储类型：zset
+Key: viewed:${token}
+Value: [(member, score), (member, score),...]
+    member: ${item} , score: timestamp, 说明: 每个商品被当前用户浏览的时间时间
+说明：每个用户浏览每个商品的时间
+
+//=====================================================
+名称：所有商品被浏览数
+存储类型：zset
+Key: viewed:
+Value: [(member, score), (member, score),...]
+    member: ${item} , score: 浏览数, 说明: 每个商品被浏览数
+说明：所有商品被浏览数
+
+//=====================================================
+名称：购物车
+存储类型：hash
+Key: cart:${session}
+Value: map<key, value>
+    key:item1, value:count1 , 说明：商品1
+    key:item2, value:count2， 说明：商品2
+说明：购物车中每个商品的数量
+
+//=====================================================
