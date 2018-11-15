@@ -1,6 +1,5 @@
 package com.kevin.redis.redisinactionspringboot.service;
 
-import com.kevin.redis.redisinactionspringboot.redis.RedisUtil;
 import com.kevin.redis.redisinactionspringboot.util.UUIDUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,6 @@ public class Chapter01 {
     private static final int VOTE_SCORE = 5;
     private static final int ARTICLES_PER_PAGE = 25;
 
-    @Autowired
-    private RedisUtil redisUtil;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -44,19 +41,19 @@ public class Chapter01 {
     public void articleVote(String userId, String articleId) {
         //判断当前文章是否支持投票
         double timeDiff = System.currentTimeMillis() - ONE_WEEK_IN_MINSECONDS;
-        if (redisUtil.getCacheZSetScore("time", "article:" + articleId) + ONE_WEEK_IN_MINSECONDS < timeDiff) {
+        if (redisTemplate.opsForZSet().score("time", "article:" + articleId) + ONE_WEEK_IN_MINSECONDS < timeDiff) {
             return;
         }
         //判断该用户是否有投票
         String votedKey = "voted:" + articleId;
         String obj = "user:" + userId;
-        if (!redisUtil.isMemberSet(votedKey, obj)) {
+        if (!redisTemplate.opsForSet().isMember(votedKey, obj)) {
             //投票用户增加
-            redisUtil.addCacheSet(votedKey, obj);
+            redisTemplate.opsForSet().add(votedKey, obj);
             //文章投票数增加
-            redisUtil.incrementHash("article:" + articleId, "votes", 1);
+            redisTemplate.opsForZSet().incrementScore("article:" + articleId, "votes", 1);
             //文章评分增加
-            redisUtil.incremCountZSet("score", articleId, VOTE_SCORE);
+            redisTemplate.opsForZSet().incrementScore("score", articleId, VOTE_SCORE);
         }
     }
 
