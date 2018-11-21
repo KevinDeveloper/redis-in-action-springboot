@@ -70,7 +70,7 @@ public class Chapter02 {
         }
         long diff = curUserSize.longValue() - limitSize.longValue();
         Set<String> tokens = redisTemplate.opsForZSet().range("recent:", 0, diff);
-        if(!CollectionUtils.isEmpty(tokens)){
+        if (!CollectionUtils.isEmpty(tokens)) {
             return;
         }
         tokens = tokens.stream().map(token -> token = "Viewed:" + token).collect(Collectors.toSet());
@@ -81,6 +81,7 @@ public class Chapter02 {
 
     /**
      * 添加商品到购物车
+     *
      * @param session
      * @param item
      * @param count
@@ -91,19 +92,18 @@ public class Chapter02 {
         } else {
             redisTemplate.opsForHash().put("cart:" + session, item, count);
         }
-
     }
 
     /**
      * 清空所有的session
      */
-    public void cleanFullSession(Long limitSize, boolean isLimit){
+    public void cleanFullSession(Long limitSize, boolean isLimit) {
         Long size = redisTemplate.opsForZSet().size("recent:");
-        if(Objects.isNull(size) || size.longValue() < limitSize){
+        if (Objects.isNull(size) || size.longValue() < limitSize) {
             return;
         }
         long diff = size - limitSize;
-        Set<String> sessions = redisTemplate.opsForZSet().range("recent:", 0 , diff - 1);
+        Set<String> sessions = redisTemplate.opsForZSet().range("recent:", 0, diff - 1);
         List<String> sessionKeys = new ArrayList<>();
         sessions.forEach(session -> {
             sessionKeys.add("viewed:" + session);
@@ -112,10 +112,7 @@ public class Chapter02 {
         redisTemplate.delete(sessionKeys);
         redisTemplate.opsForHash().delete("login:", sessions);
         redisTemplate.opsForZSet().remove("recent:", sessions);
-
     }
-
-
 
 
 }
